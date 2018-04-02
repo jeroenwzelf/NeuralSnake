@@ -56,16 +56,13 @@ void renderer::init_glut(int argc, char *argv[]) {
 }
 
 void renderer::glTimer(int value) {
-	static int lastTime;
-	int thisTime;
-	float time;
-	thisTime = glutGet(GLUT_ELAPSED_TIME);
-	time = (thisTime - lastTime) * 0.001;
-	lastTime = thisTime;
-	if (game_callback->running) game_callback->update(time);
+	static int delay = 0;
+	++delay;
+	if (game_callback->running && delay == 1)
+		game_callback->update();
+	else if (delay > 1) delay = 0;
 
 	glutPostRedisplay();
-
 	glutTimerFunc(50, glTimerCallback, 0);
 }
 
@@ -113,15 +110,8 @@ void renderer::display() {
 		glVertex2i( 9+1,	 -9	  );
 	glEnd();
 
-	if (game_callback->running) game_callback->draw();
-	else {
-		std::string text = "You just played yourself!";
-		glColor3f(1.0f, 1.0f, 1.0f);
-	    glRasterPos2i(-5, 0);
-	    for (char& c : text) {
-	    	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (int)c);
-	    }
-	}
+	game_callback->draw();
+	if (!game_callback->running) game_callback->draw_lose();
 
 	glFlush();
 }

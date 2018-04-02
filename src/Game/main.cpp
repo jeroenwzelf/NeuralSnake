@@ -31,11 +31,8 @@ void initWindow(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	initWindow(argc, argv);
-	
-    float screen_w = glutGet(GLUT_WINDOW_WIDTH);
-    float screen_h = glutGet(GLUT_WINDOW_HEIGHT);
 
-	std::shared_ptr<game> g = std::make_shared<game>(screen_w, screen_h);
+	std::shared_ptr<game> g = std::make_shared<game>();
 	renderer Renderer(argc, argv, g);
 	return 0;
 }

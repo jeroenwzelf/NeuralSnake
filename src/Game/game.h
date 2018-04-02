@@ -9,9 +9,11 @@
 
 class game {
 	public:
-		game(float screen_w, float screen_h);
+		game();
+		void new_game();
 		void draw();
-		void update(float time);
+		void draw_lose();
+		void update();
 		void handle_input();
 	private:
 		/* -- events -- */

@@ -3,24 +3,23 @@
 #include "GL/glew.h"
 #include "GL/glut.h"
 
-game::game(float screen_w, float screen_h) {
-	running = true;
+game::game() {
 	inputHandler = std::make_shared<input_handler>();
+	new_game();
+}
+
+void game::new_game() {
+	running = true;
 	snake = std::make_shared<Snake>(WORLD_SIZE);
 	generate_food();
 }
 
-void game::update(float time) {
-	static int delay = 0;
-
+void game::update() {
 	/* -- food generation -- */
-	if (randomfloat(0, 100) < 1) generate_food();
+	if (food.empty()) generate_food();
+	else if (randomfloat(0, 200) < 1) generate_food();
 	/* -- snake move -- */
-	if (delay == 1) {
-		if (!snake->move()) lose();
-		delay = 0;
-	}
-	else ++delay;
+	if (!snake->move()) lose();
 	/* -- snake food eat -- */
 	for (auto part : snake->body) {
 		for (auto f = food.begin(); f != food.end();) {
@@ -44,6 +43,27 @@ void game::generate_food() {
 void game::draw() {
 	draw_food();
 	draw_snake();
+}
+
+void game::draw_lose() {
+	draw();
+	/* -- draw textbox -- */
+	float x = -7.5; float y = -1.5;
+	float w = 15; float h = 3;
+	glColor3f(0.75, 0.75, 0.75);
+	glBegin(GL_QUADS);
+		glVertex2f(  x ,	 y	);
+		glVertex2f(  x ,	y+h );
+		glVertex2f( x+w,	y+h );
+		glVertex2f( x+w,	 y	);
+	glEnd();
+	/* -- draw text -- */
+	std::string text = "You just played yourself!";
+	glColor3f(0, 0, 0);
+    glRasterPos2f(-6.5, 0);
+    for (char& c : text) {
+    	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (int)c);
+    }
 }
 
 void game::draw_gridpixel(coordinate C) {
@@ -75,16 +95,18 @@ void game::draw_snake() {
 
 void game::handle_input() {
 	if (running) {
-		// keypress continuous actions (in keys_down)
+		/* -- keypress continuous actions (in keys_down) -- */
 		for (unsigned int i = 0; i < inputHandler->keys_down.size(); ++i) {
 			unsigned char key = inputHandler->keys_down.at(i);
 			switch(key) {
+
 			}
 		}
-		// keypress event actions (in keys_pressed)
+		/* -- keypress event actions (in keys_pressed) -- */
 		for (unsigned int i = 0; i < inputHandler->keys_pressed.size(); ++i) {
 			unsigned char key = inputHandler->keys_pressed.at(i);
 			switch(key) {
+				case 'w': snake->up();		break;
 				case 's': snake->down();	break;
 				case 'a': snake->left();	break;
 				case 'd': snake->right();	break;
@@ -95,17 +117,18 @@ void game::handle_input() {
 		}
 	}
 	else {
-		// keypress continuous actions (in keys_down)
+		/* -- keypress continuous actions (in keys_down) -- */
 		for (unsigned int i = 0; i < inputHandler->keys_down.size(); ++i) {
 			unsigned char key = inputHandler->keys_down.at(i);
 			switch(key) {
 
 			}
 		}
-		// keypress event actions (in keys_pressed)
+		/* -- keypress event actions (in keys_pressed) -- */
 		for (unsigned int i = 0; i < inputHandler->keys_pressed.size(); ++i) {
 			unsigned char key = inputHandler->keys_pressed.at(i);
 			switch(key) {
+				case 'r': new_game(); break;
 				case 'q':
 				case 27 :	// 'esc'
 					exit(0); break;

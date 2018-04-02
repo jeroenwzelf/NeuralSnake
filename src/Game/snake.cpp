@@ -2,9 +2,11 @@
 
 Snake::Snake(int W) : WORLD_MAX(W), snake_direction(UP) {
 	turning = false;
+	/* -- create snake body -- */
 	body.push_back(coordinate(W/2, W/2));
 	body.push_back(coordinate(W/2, (W/2)-1));
 	body.push_back(coordinate(W/2, (W/2)-2));
+	/* -- generate snake color -- */
 	do {
 		snake_color.r = randomfloat(0.0, 1.0);
 		snake_color.g = randomfloat(0.0, 1.0);
@@ -13,6 +15,7 @@ Snake::Snake(int W) : WORLD_MAX(W), snake_direction(UP) {
 }
 
 bool Snake::move() {
+	/* -- determine snake direction -- */
 	coordinate head = body.front();
 	switch(snake_direction) {
 		case UP:	++head.y; head.y = head.y % (WORLD_MAX); break;
@@ -20,10 +23,12 @@ bool Snake::move() {
 		case LEFT:	--head.x; if (head.x < 0) head.x = WORLD_MAX-1; break;
 		case RIGHT:	++head.x; head.x = head.x % (WORLD_MAX); break;
 	}
+	/* -- check if snake is colliding with itself -- */
 	for (auto part : body) 
 		if (part.x == head.x && part.y == head.y) return false;
-	body.insert(body.begin(), head);
 
+	/* -- move snake -- */
+	body.insert(body.begin(), head);
 	if (!ate) body.pop_back();
 	else ate = false;
 	turning = false;
