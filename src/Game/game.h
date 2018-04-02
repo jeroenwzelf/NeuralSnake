@@ -12,8 +12,8 @@ class game {
 		game();
 		void new_game();
 		void draw();
-		void draw_lose();
 		void update();
+		void draw_lose();
 		void handle_input();
 	private:
 		/* -- events -- */
@@ -26,9 +26,8 @@ class game {
 		void draw_snake();
 		void draw_food();
 	public:
-		bool running;
-		std::shared_ptr<input_handler> inputHandler;
-	private:
 		std::shared_ptr<Snake> snake;
 		std::vector<coordinate> food;
+		bool running;
+		std::shared_ptr<input_handler> inputHandler;
 };

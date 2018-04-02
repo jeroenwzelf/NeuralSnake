@@ -6,7 +6,7 @@ CC=g++
 CPPFLAGS=-Wall -ggdb `sdl-config --cflags` -std=c++14
 LDFLAGS=`sdl-config --libs` -lglut -lGLEW -lGLU -lGL -lm -Llib -lSOIL lib/libIrrKlang.so -pthread
 
-MODULES   := Game Graphics
+MODULES   := Game Network Graphics
 SRC_DIR   := $(addprefix src/,$(MODULES))
 BUILD_DIR := $(addprefix build/,$(MODULES))
 

@@ -40,11 +40,13 @@ void game::generate_food() {
 	food.push_back( coordinate(randomfloat(0, WORLD_SIZE), randomfloat(0, WORLD_SIZE)) );
 }
 
+/* -- draw objects over world -- */
 void game::draw() {
 	draw_food();
 	draw_snake();
 }
 
+/* -- draws messagebox indicating the game ended -- */
 void game::draw_lose() {
 	draw();
 	/* -- draw textbox -- */
@@ -66,10 +68,11 @@ void game::draw_lose() {
     }
 }
 
+/* -- draws white pixel with coordinate C on the grid -- */
 void game::draw_gridpixel(coordinate C) {
 	draw_gridpixel(C, color(0.75f, 0.75f, 0.75f));
 }
-
+/* -- draws colored pixel with coordinate C on the grid -- */
 void game::draw_gridpixel(coordinate C, color col) {
 	float x = C.x-(WORLD_SIZE / 2); float y = C.y-(WORLD_SIZE / 2);
 	glColor3f(col.r, col.g, col.b);
@@ -116,6 +119,7 @@ void game::handle_input() {
 			}
 		}
 	}
+	/* -- when game over -- */
 	else {
 		/* -- keypress continuous actions (in keys_down) -- */
 		for (unsigned int i = 0; i < inputHandler->keys_down.size(); ++i) {

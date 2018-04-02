@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 	initWindow(argc, argv);
 
 	std::shared_ptr<game> g = std::make_shared<game>();
-	renderer Renderer(argc, argv, g);
+	std::shared_ptr<neural_network> n = std::make_shared<neural_network>(g);
+	renderer Renderer(argc, argv, g, n);
 	return 0;
 }

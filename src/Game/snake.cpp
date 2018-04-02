@@ -36,6 +36,7 @@ bool Snake::move() {
 	return true;
 }
 
+/* -- snake commands -- */
 void Snake::eat() 	{ ate = true; }
 void Snake::up()	{ if (!turning && snake_direction != DOWN)	{ snake_direction = UP;	turning = true; } }
 void Snake::down()	{ if (!turning && snake_direction != UP)	{ snake_direction = DOWN; turning = true; } }

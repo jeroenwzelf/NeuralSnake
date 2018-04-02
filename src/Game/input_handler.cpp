@@ -11,3 +11,7 @@ void input_handler::keyboardUpFunc(const unsigned char key, const int x, const i
 		else ++i;
 	}
 }
+
+void input_handler::inputFunc(const unsigned char key) {
+	keys_pressed.push_back(key);
+}

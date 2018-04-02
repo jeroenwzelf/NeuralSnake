@@ -8,7 +8,7 @@ class Snake {
 		Snake(int W);
 		bool move();
 		void eat();
-
+		/* -- change snake direction -- */
 		void up();
 		void down();
 		void left();
@@ -17,9 +17,9 @@ class Snake {
 		std::vector<coordinate> body;
 		color snake_color;
 	private:
-		int WORLD_MAX;
+		int WORLD_MAX;	// grid limits
 		enum direction { UP, DOWN, LEFT, RIGHT };
 		direction snake_direction;
-		bool turning;
-		bool ate;
+		bool turning;	// is snake turning this frame?
+		bool ate;		// did snake eat food last frame?
 };
