@@ -32,6 +32,7 @@ class game {
 		int points;
 		int seconds;
 		bool running;
+		bool music;
 		std::shared_ptr<input_handler> inputHandler;
 		std::shared_ptr<sound_engine> soundEngine;
 };

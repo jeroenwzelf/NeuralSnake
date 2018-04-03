@@ -9,7 +9,7 @@ void sound_engine::play_nom() {
 }
 
 void sound_engine::play_music() {
-	std::string fileName = filePath + "AcidicInvaders.ogg";
+	std::string fileName = filePath + "music.wav";
 	music = engine->play2D(fileName.c_str(), true, false, true);
 }
 void sound_engine::stop_music() {

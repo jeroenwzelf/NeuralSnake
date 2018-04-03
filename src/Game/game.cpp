@@ -6,6 +6,8 @@
 game::game() {
 	inputHandler = std::make_shared<input_handler>();
 	soundEngine = std::make_shared<sound_engine>();
+	music = true;
+	soundEngine->play_music();
 	new_game();
 }
 
@@ -14,6 +16,7 @@ void game::new_game() {
 	points = 0;
 	seconds = 0;
 	snake = std::make_shared<Snake>(WORLD_SIZE);
+	food.clear();
 	generate_food();
 }
 
@@ -128,6 +131,9 @@ void game::handle_input() {
 				case 's': snake->down();	break;
 				case 'a': snake->left();	break;
 				case 'd': snake->right();	break;
+				case 'm': 	if (music) { soundEngine->stop_music(); music = false; }
+							else { soundEngine->play_music(); music = true; }
+							break;
 				case 'q':
 				case 27 :	// 'esc'
 					exit(0); break;
