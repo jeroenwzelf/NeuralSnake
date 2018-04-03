@@ -1,7 +1,7 @@
 # NeuralSnake
 Small C++ jam to program a neural network that is able to learn to play Snake.
 
-Snake is implemented with **OpenGL**, with the option to use the *IrrKlang* library for sound, and the *SOIL* library for loading images in OpenGL.
+Snake is implemented with **OpenGL**, and the *IrrKlang* library is used for sound, with the option to use the *SOIL* library for loading images in OpenGL.
 
 ## Running Neuralsnake
 * Download the repository
