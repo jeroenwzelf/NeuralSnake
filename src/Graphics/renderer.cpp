@@ -73,10 +73,19 @@ void renderer::init_glut(int argc, char *argv[]) {
 
 /* -- constant update -- */
 void renderer::glTimer(int value) {
+	/* -- keep real time in milliseconds -- */
+	static int lastTime;
+	int thisTime;
+	float time;
+	thisTime = glutGet(GLUT_ELAPSED_TIME);
+	time = (thisTime - lastTime);
+	lastTime = thisTime;
+
+	/* -- update game state -- */
 	static int delay = 0;
 	++delay;
 	if (game_callback->running && delay == 1)
-		game_callback->update();
+		game_callback->update(time);
 	else if (delay > 1) delay = 0;
 
 	glutPostRedisplay();

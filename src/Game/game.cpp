@@ -10,11 +10,19 @@ game::game() {
 
 void game::new_game() {
 	running = true;
+	points = 0;
+	seconds = 0;
 	snake = std::make_shared<Snake>(WORLD_SIZE);
 	generate_food();
 }
 
-void game::update() {
+void game::update(float time) {
+	/* -- add every second to time -- */
+	static float milliseconds_elapsed = 0;
+	milliseconds_elapsed += time;
+	if (milliseconds_elapsed > 500) {
+		++seconds; milliseconds_elapsed = 0;
+	}
 	/* -- food generation -- */
 	if (food.empty()) generate_food();
 	else if (randomfloat(0, 200) < 1) generate_food();
@@ -24,6 +32,7 @@ void game::update() {
 	for (auto part : snake->body) {
 		for (auto f = food.begin(); f != food.end();) {
 			if (part.x == f->x && part.y == f->y) {
+				points += 100;
 				snake->eat();
 				food.erase(f);
 			}
@@ -42,8 +51,24 @@ void game::generate_food() {
 
 /* -- draw objects over world -- */
 void game::draw() {
-	draw_food();
-	draw_snake();
+	/* -- draw food -- */
+	for (auto f : food) draw_gridpixel(f);
+	/* -- draw snake -- */
+	for (auto part : snake->body)
+		draw_gridpixel(part, snake->snake_color);
+	/* -- draw counters -- */
+    std::string secondcounter = "SECONDS: " + std::to_string(seconds);
+	glColor3f(0, 0, 0);
+    glRasterPos2f(-7, 9.2);
+    for (char& c : secondcounter) {
+    	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (int)c);
+    }
+	std::string pointcounter = "POINTS: " + std::to_string(points);
+	glColor3f(0, 0, 0);
+    glRasterPos2f(1, 9.2);
+    for (char& c : pointcounter) {
+    	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (int)c);
+    }
 }
 
 /* -- draws messagebox indicating the game ended -- */
@@ -82,18 +107,6 @@ void game::draw_gridpixel(coordinate C, color col) {
 		glVertex2f( x+1,	y+1 );
 		glVertex2f( x+1,	 y	);
 	glEnd();
-}
-
-void game::draw_food() {
-	for (auto f : food) {
-		draw_gridpixel(f);
-	}
-}
-
-void game::draw_snake() {
-	for (auto part : snake->body) {
-		draw_gridpixel(part, snake->snake_color);
-	}
 }
 
 void game::handle_input() {

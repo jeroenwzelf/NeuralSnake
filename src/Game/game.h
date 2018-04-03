@@ -12,7 +12,7 @@ class game {
 		game();
 		void new_game();
 		void draw();
-		void update();
+		void update(float time);
 		void draw_lose();
 		void handle_input();
 	private:
@@ -28,6 +28,8 @@ class game {
 	public:
 		std::shared_ptr<Snake> snake;
 		std::vector<coordinate> food;
+		int points;
+		int seconds;
 		bool running;
 		std::shared_ptr<input_handler> inputHandler;
 };
