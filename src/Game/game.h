@@ -2,6 +2,7 @@
 
 #include "structures.h"
 #include "snake.h"
+#include "food.h"
 #include "input_handler.h"
 #include "SoundEngine.h"
 #include <memory>
@@ -10,7 +11,7 @@
 
 class game {
 	public:
-		game();
+		game(bool DM);
 		void new_game();
 		void draw();
 		void update(float time);
@@ -27,8 +28,10 @@ class game {
 		void draw_snake();
 		void draw_food();
 	public:
+		bool DISCO_MODE;
 		std::shared_ptr<Snake> snake;
-		std::vector<coordinate> food;
+		std::vector<food> all_food;
+		color backgroundcolor;
 		int points;
 		int seconds;
 		bool running;

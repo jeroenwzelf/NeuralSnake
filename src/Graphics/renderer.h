@@ -8,7 +8,9 @@
 
 class renderer {
 	public:
-		renderer(int argc, char *argv[], std::shared_ptr<game> g, std::shared_ptr<neural_network> n);
+		renderer(int argc, char *argv[],
+			std::shared_ptr<game> g, std::shared_ptr<neural_network> n,
+			bool USR_PLAY);
 		void display();
 		void reshape(const int w, const int h);
 		void glTimer(int value);

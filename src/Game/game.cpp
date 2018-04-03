@@ -3,10 +3,12 @@
 #include "GL/glew.h"
 #include "GL/glut.h"
 
-game::game() {
+game::game(bool DM) {
 	inputHandler = std::make_shared<input_handler>();
 	soundEngine = std::make_shared<sound_engine>();
+	DISCO_MODE = DM;
 	music = true;
+	backgroundcolor.set(0, 0, 0);
 	soundEngine->play_music();
 	new_game();
 }
@@ -16,7 +18,7 @@ void game::new_game() {
 	points = 0;
 	seconds = 0;
 	snake = std::make_shared<Snake>(WORLD_SIZE);
-	food.clear();
+	all_food.clear();
 	generate_food();
 }
 
@@ -28,18 +30,19 @@ void game::update(float time) {
 		++seconds; milliseconds_elapsed = 0;
 	}
 	/* -- food generation -- */
-	if (food.empty()) generate_food();
+	if (all_food.empty()) generate_food();
 	else if (randomfloat(0, 200) < 1) generate_food();
 	/* -- snake move -- */
 	if (!snake->move()) lose();
 	/* -- snake food eat -- */
 	for (auto part : snake->body) {
-		for (auto f = food.begin(); f != food.end();) {
-			if (part.x == f->x && part.y == f->y) {
+		for (auto f = all_food.begin(); f != all_food.end();) {
+			if (part.x == f->loc.x && part.y == f->loc.y) {
 				points += 100;
 				snake->eat();
 				soundEngine->play_nom();
-				food.erase(f);
+				if (DISCO_MODE) backgroundcolor.set(f->col);
+				all_food.erase(f);
 			}
 			else ++f;
 		}
@@ -51,25 +54,79 @@ void game::lose() {
 }
 
 void game::generate_food() {
-	food.push_back( coordinate(randomfloat(0, WORLD_SIZE), randomfloat(0, WORLD_SIZE)) );
+	color c;
+	if (DISCO_MODE) c.randomize();
+	else c.set(0.75, 0.75, 0.75);
+	all_food.push_back( food(coordinate(randomfloat(0, WORLD_SIZE), randomfloat(0, WORLD_SIZE)), c ));
 }
 
-/* -- draw objects over world -- */
+/* -- draw scene -- */
 void game::draw() {
+	glClearColor(backgroundcolor.r, backgroundcolor.g, backgroundcolor.b, 1.0);
+	color gridcolor, snakecolor;
+	if (DISCO_MODE) {
+		snakecolor.randomize();
+		gridcolor.set(backgroundcolor);
+		gridcolor.inverse();
+	}
+	else {
+		gridcolor.set(0.75f, 0.75f, 0.75f);
+		snakecolor.set(snake->snake_color);
+	}
+
+	/* -- draw world grid -- */
+	float HALF_GRID_SIZE = 9;
+	glBegin(GL_LINES);
+    glColor3f(gridcolor.r, gridcolor.g, gridcolor.b);
+    for(float i = -HALF_GRID_SIZE; i <= HALF_GRID_SIZE; ++i) {
+        glVertex2f(i, -HALF_GRID_SIZE);
+        glVertex2f(i, HALF_GRID_SIZE);
+
+        glVertex2f(-HALF_GRID_SIZE,	i);
+        glVertex2f(HALF_GRID_SIZE,	i);
+    }
+    glEnd();
+
+    /* -- draw world grid borders -- */
+    glBegin(GL_QUADS);	// TOP BORDER
+		glVertex2i( -10,	 9	);
+		glVertex2i( -10,	9+1 );
+		glVertex2i(-10+20,	9+1 );
+		glVertex2i(-10+20,	 9	);
+	glEnd();
+	glBegin(GL_QUADS);	// BOTTOM BORDER
+		glVertex2i(  -10,	 -10  );
+		glVertex2i(  -10,	-10+1 );
+		glVertex2i(-10+20,	-10+1 );
+		glVertex2i(-10+20,	 -10  );
+	glEnd();
+	glBegin(GL_QUADS);	// LEFT BORDER
+		glVertex2i( -10,	 -9	  );
+		glVertex2i( -10,	-9+18 );
+		glVertex2i(-10+1,	-9+18 );
+		glVertex2i(-10+1,	 -9	  );
+	glEnd();
+	glBegin(GL_QUADS);	// RIGHT BORDER
+		glVertex2i(  9, 	 -9	  );
+		glVertex2i(  9, 	-9+18 );
+		glVertex2i( 9+1,	-9+18 );
+		glVertex2i( 9+1,	 -9	  );
+	glEnd();
+
 	/* -- draw food -- */
-	for (auto f : food) draw_gridpixel(f);
+	for (auto f : all_food) draw_gridpixel(f.loc, f.col);
 	/* -- draw snake -- */
 	for (auto part : snake->body)
-		draw_gridpixel(part, snake->snake_color);
+		draw_gridpixel(part, snakecolor);
 	/* -- draw counters -- */
     std::string secondcounter = "SECONDS: " + std::to_string(seconds);
-	glColor3f(0, 0, 0);
+	glColor3f(backgroundcolor.r, backgroundcolor.g, backgroundcolor.b);
     glRasterPos2f(-7, 9.2);
     for (char& c : secondcounter) {
     	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (int)c);
     }
 	std::string pointcounter = "POINTS: " + std::to_string(points);
-	glColor3f(0, 0, 0);
+	glColor3f(backgroundcolor.r, backgroundcolor.g, backgroundcolor.b);
     glRasterPos2f(1, 9.2);
     for (char& c : pointcounter) {
     	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, (int)c);
@@ -78,7 +135,6 @@ void game::draw() {
 
 /* -- draws messagebox indicating the game ended -- */
 void game::draw_lose() {
-	draw();
 	/* -- draw textbox -- */
 	float x = -7.5; float y = -1.5;
 	float w = 15; float h = 3;

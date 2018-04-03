@@ -27,5 +27,9 @@ struct coordinate {
 struct color {
 	color() {}
 	color(float R, float G, float B) : r(R), g(G), b(B) {}
+	void set(float R, float G, float B) { r = R; g = G; b = B; }
+	void set(color c) { r = c.r; g = c.g; b = c.b; }
+	void randomize() { r = randomfloat(0.0, 1.0); g = randomfloat(0.0, 1.0); b = randomfloat(0.0, 1.0); }
+	void inverse() { r = 1-r; g = 1-g; b = 1-b; }
 	float r, g, b;
 };

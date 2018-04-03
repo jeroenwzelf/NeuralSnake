@@ -32,8 +32,19 @@ int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	initWindow(argc, argv);
 
-	std::shared_ptr<game> g = std::make_shared<game>();
+	/* -- set flags -- */
+	static const int flagcount = 2;
+	bool USER_PLAY = false;
+	bool DISCO_MODE = false;
+	for (int i=1; i<1+flagcount; ++i) {
+		if (argc > i) {
+			if (strcmp(argv[i], "-u") == 0) USER_PLAY = true;
+			if (strcmp(argv[i], "-d") == 0) DISCO_MODE = true;
+		}
+	}
+
+	std::shared_ptr<game> g = std::make_shared<game>(DISCO_MODE);
 	std::shared_ptr<neural_network> n = std::make_shared<neural_network>(g);
-	renderer Renderer(argc, argv, g, n);
+	renderer Renderer(argc, argv, g, n, USER_PLAY);
 	return 0;
 }

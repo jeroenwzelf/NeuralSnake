@@ -33,11 +33,13 @@ void neuralinputCallback(const unsigned char key) {
 /* -- -- */
 
 /* -- set callbacks and init glut -- */
-renderer::renderer(int argc, char *argv[], std::shared_ptr<game> g, std::shared_ptr<neural_network> n) {
+renderer::renderer(int argc, char *argv[],
+				std::shared_ptr<game> g, std::shared_ptr<neural_network> n,
+				bool USR_PLAY) {
 	glut_callback = this;
 	game_callback = g;
 	neural_network_callback = n;
-	USER_PLAY = false;
+	USER_PLAY = USR_PLAY;
 	init_glut(argc, argv);
 }
 
@@ -53,9 +55,6 @@ void renderer::init_glut(int argc, char *argv[]) {
 	glutReshapeFunc(reshapeCallback);
 	glutDisplayFunc(displayCallback);
 	glutTimerFunc(50, glTimerCallback, 0);
-
-	/* -- user can play the game if you call the program with './neuralsnake -u' -- */
-	if (argc == 2 && strcmp(argv[1], "-u") == 0) USER_PLAY = true;
 
 	// keyboard input functions
 	if (USER_PLAY) {
@@ -100,45 +99,6 @@ void renderer::display() {
 	if (!USER_PLAY) neuralinputCallback(neural_network_callback->get_input());
 	game_callback->handle_input();
 	
-	/* -- draw world grid -- */
-	float HALF_GRID_SIZE = 9;
-	glBegin(GL_LINES);
-    glColor3f(0.75f, 0.75f, 0.75f);
-    for(float i = -HALF_GRID_SIZE; i <= HALF_GRID_SIZE; ++i) {
-        glVertex2f(i, -HALF_GRID_SIZE);
-        glVertex2f(i, HALF_GRID_SIZE);
-
-        glVertex2f(-HALF_GRID_SIZE,	i);
-        glVertex2f(HALF_GRID_SIZE,	i);
-    }
-    glEnd();
-
-    /* -- draw grid borders -- */
-    glBegin(GL_QUADS);	// TOP BORDER
-		glVertex2i( -10,	 9	);
-		glVertex2i( -10,	9+1 );
-		glVertex2i(-10+20,	9+1 );
-		glVertex2i(-10+20,	 9	);
-	glEnd();
-	glBegin(GL_QUADS);	// BOTTOM BORDER
-		glVertex2i(  -10,	 -10  );
-		glVertex2i(  -10,	-10+1 );
-		glVertex2i(-10+20,	-10+1 );
-		glVertex2i(-10+20,	 -10  );
-	glEnd();
-	glBegin(GL_QUADS);	// LEFT BORDER
-		glVertex2i( -10,	 -9	  );
-		glVertex2i( -10,	-9+18 );
-		glVertex2i(-10+1,	-9+18 );
-		glVertex2i(-10+1,	 -9	  );
-	glEnd();
-	glBegin(GL_QUADS);	// RIGHT BORDER
-		glVertex2i(  9, 	 -9	  );
-		glVertex2i(  9, 	-9+18 );
-		glVertex2i( 9+1,	-9+18 );
-		glVertex2i( 9+1,	 -9	  );
-	glEnd();
-
 	/* -- draw game objects -- */
 	game_callback->draw();
 	if (!game_callback->running) game_callback->draw_lose();

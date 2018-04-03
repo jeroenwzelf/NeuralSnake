@@ -14,5 +14,7 @@ const unsigned char neural_network::get_input() {
 
 /* -- get gamestate for neural network to analyse -- */
 gamestate neural_network::view_game() {
-	return gamestate(Game->snake->body, Game->food, Game->points, Game->seconds);
+	std::vector<coordinate> food;
+	for (auto f : Game->all_food) food.push_back(f.loc);
+	return gamestate(Game->snake->body, food, Game->points, Game->seconds);
 }

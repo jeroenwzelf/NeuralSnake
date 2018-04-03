@@ -7,10 +7,7 @@ Snake::Snake(int W) : WORLD_MAX(W), snake_direction(UP) {
 	body.push_back(coordinate(W/2, (W/2)-1));
 	body.push_back(coordinate(W/2, (W/2)-2));
 	/* -- generate snake color -- */
-	do {
-		snake_color.r = randomfloat(0.0, 1.0);
-		snake_color.g = randomfloat(0.0, 1.0);
-		snake_color.b = randomfloat(0.0, 1.0);
+	do { snake_color.randomize();
 	} while (snake_color.r < 0.4 && snake_color.g < 0.4 && snake_color.b < 0.4);
 }
 
