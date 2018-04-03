@@ -5,6 +5,7 @@
 
 game::game() {
 	inputHandler = std::make_shared<input_handler>();
+	soundEngine = std::make_shared<sound_engine>();
 	new_game();
 }
 
@@ -34,6 +35,7 @@ void game::update(float time) {
 			if (part.x == f->x && part.y == f->y) {
 				points += 100;
 				snake->eat();
+				soundEngine->play_nom();
 				food.erase(f);
 			}
 			else ++f;

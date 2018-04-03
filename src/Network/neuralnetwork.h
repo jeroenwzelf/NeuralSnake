@@ -4,7 +4,17 @@
 #include "structures.h"
 #include <memory>
 
-typedef std::pair<std::vector<coordinate>, std::vector<coordinate>> gamestate;
+struct gamestate {
+	gamestate() : points(0), time(0) {}
+	gamestate(std::vector<coordinate> S, std::vector<coordinate> F, int P, int T) : points(P), time(T) {
+		snake = S;
+		food = F;
+	}
+	std::vector<coordinate> snake;
+	std::vector<coordinate> food;
+	int points;
+	int time;
+};
 
 /*
  * This class only generates random input for now, and

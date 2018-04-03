@@ -13,8 +13,5 @@ const unsigned char neural_network::get_input() {
 
 /* -- get gamestate for neural network to analyse -- */
 gamestate neural_network::view_game() {
-	gamestate S;
-	S.first = Game->snake->body;
-	S.second = Game->food;
-	return S;
+	return gamestate(Game->snake->body, Game->food, Game->points, Game->seconds);
 }

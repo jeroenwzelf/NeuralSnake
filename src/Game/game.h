@@ -3,6 +3,7 @@
 #include "structures.h"
 #include "snake.h"
 #include "input_handler.h"
+#include "SoundEngine.h"
 #include <memory>
 
 #define WORLD_SIZE 18
@@ -32,4 +33,5 @@ class game {
 		int seconds;
 		bool running;
 		std::shared_ptr<input_handler> inputHandler;
+		std::shared_ptr<sound_engine> soundEngine;
 };
