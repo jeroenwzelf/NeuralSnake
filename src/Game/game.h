@@ -28,14 +28,17 @@ class game {
 		void draw_snake();
 		void draw_food();
 	public:
-		bool DISCO_MODE;
+		/* -- game state -- */
 		std::shared_ptr<Snake> snake;
 		std::vector<food> all_food;
-		color backgroundcolor;
-		int points;
-		int seconds;
-		bool running;
+		int points, seconds;
+		/* -- drawing -- */
 		bool music;
+		color backgroundcolor;
+		/* -- meta handlers -- */
+		bool running;
 		std::shared_ptr<input_handler> inputHandler;
 		std::shared_ptr<sound_engine> soundEngine;
+		/* -- flags -- */
+		bool DISCO_MODE;
 };
