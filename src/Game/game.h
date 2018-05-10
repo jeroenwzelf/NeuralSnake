@@ -7,8 +7,6 @@
 #include "SoundEngine.h"
 #include <memory>
 
-#define WORLD_SIZE 18
-
 class game {
 	public:
 		game(bool DM);
@@ -29,6 +27,7 @@ class game {
 		void draw_food();
 	public:
 		/* -- game state -- */
+		static const int WORLD_SIZE = 18;
 		std::shared_ptr<Snake> snake;
 		std::vector<food> all_food;
 		int points, seconds;

@@ -7,9 +7,9 @@ game::game(bool DM) {
 	inputHandler = std::make_shared<input_handler>();
 	soundEngine = std::make_shared<sound_engine>();
 	DISCO_MODE = DM;
-	music = true;
+	music = DM;
+	if (music) soundEngine->play_music();
 	backgroundcolor.set(0, 0, 0);
-	soundEngine->play_music();
 	new_game();
 }
 
@@ -17,7 +17,7 @@ void game::new_game() {
 	running = true;
 	points = 0;
 	seconds = 0;
-	snake = std::make_shared<Snake>(WORLD_SIZE);
+	int w = WORLD_SIZE; snake = std::make_shared<Snake>(w);
 	all_food.clear();
 	generate_food();
 }

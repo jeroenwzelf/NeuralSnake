@@ -36,15 +36,17 @@ int main(int argc, char *argv[]) {
 	static const int flagcount = 2;
 	bool USER_PLAY = false;
 	bool DISCO_MODE = false;
+	agent a = RANDOM;
 	for (int i=1; i<1+flagcount; ++i) {
 		if (argc > i) {
 			if (strcmp(argv[i], "-u") == 0) USER_PLAY = true;
 			if (strcmp(argv[i], "-d") == 0) DISCO_MODE = true;
+			if (strcmp(argv[i], "-simple") == 0) a = SIMPLE;
 		}
 	}
 
 	std::shared_ptr<game> g = std::make_shared<game>(DISCO_MODE);
-	std::shared_ptr<neural_network> n = std::make_shared<neural_network>(g);
+	std::shared_ptr<neural_network> n = std::make_shared<neural_network>(g, a);
 	renderer Renderer(argc, argv, g, n, USER_PLAY);
 	return 0;
 }
