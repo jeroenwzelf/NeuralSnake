@@ -1,31 +1,24 @@
 #include "neuralnetwork.h"
 
-neural_network::neural_network(std::shared_ptr<game> g, agent A) : active_agent(A), Game(g) {}
+neural_network::neural_network(std::shared_ptr<game> g, agent A) : active_agent(A), gamestate(g) {}
 
 const unsigned char neural_network::get_input() {
-	gamestate GS = view_game();
 	switch(active_agent) {
-		case SIMPLE: return simple_ai(GS); break;
-		case RANDOM: return random_ai(GS); break;
+		case SIMPLE: return simple_ai(); break;
+		case RANDOM: return random_ai(); break;
 	}
 	return 27;
 }
 
-/* -- get gamestate for neural network to analyse -- */
-gamestate neural_network::view_game() {
-	std::vector<coordinate> food;
-	for (auto f : Game->all_food) food.push_back(f.loc);
-	return gamestate(Game->snake->body, food, Game->points, Game->seconds, Game->WORLD_SIZE);
-}
-
 /* -- finds a shortest path to nearest food, blind to it's own body --*/
-unsigned char neural_network::simple_ai(gamestate GS) {
-	coordinate head = GS.snake.front();
+unsigned char neural_network::simple_ai() {
+	coordinate head = gamestate->snake->body.front();
 
 	/* find closest food */
 	float closest_distance = 10000;
 	coordinate closest_food = head;
-	for (auto &f : GS.food) {
+	for (auto &food : gamestate->all_food) {
+		coordinate f = food.loc;
 		float d = sqrt( pow((f.x - head.x), 2) + pow((f.y - head.y), 2) );
 		if (d < closest_distance) {
 			closest_distance = d;
@@ -40,8 +33,8 @@ unsigned char neural_network::simple_ai(gamestate GS) {
 		if (flare_1 != target) {
 			/* look for closest path by sending a flare to each direction */
 			while (flare_1 != target && flare_2 != target) {
-				++flare_1; flare_1 = flare_1 % GS.WORLD_MAX;	// move flare_1 up/right
-				--flare_2; if (flare_2 < 0) flare_2 = GS.WORLD_MAX-1;	// move flare_2 down/left
+				++flare_1; flare_1 = flare_1 % gamestate->WORLD_SIZE;	// move flare_1 up/right
+				--flare_2; if (flare_2 < 0) flare_2 = gamestate->WORLD_SIZE-1;	// move flare_2 down/left
 			}
 			switch(i) {
 				case 0: {
@@ -62,7 +55,7 @@ unsigned char neural_network::simple_ai(gamestate GS) {
 }
 
 /* -- totally random movement -- */
-unsigned char neural_network::random_ai(gamestate GS) {
+unsigned char neural_network::random_ai() {
 	switch(randomint(0, 3)) {
 		case 0: return 'w'; break;
 		case 1: return 's'; break;
