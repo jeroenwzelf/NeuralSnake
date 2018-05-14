@@ -1,17 +1,12 @@
-#include "neuralnetwork.h"
+#include "AI.h"
 
-neural_network::neural_network(std::shared_ptr<game> g, agent A) : active_agent(A), gamestate(g) {}
+class AI_simple : public AI {
+	public:
+		AI_simple(std::shared_ptr<game> g) : AI(g) {}
+		const unsigned char get_input() override;
+};
 
-const unsigned char neural_network::get_input() {
-	switch(active_agent) {
-		case SIMPLE: return simple_ai(); break;
-		case RANDOM: return random_ai(); break;
-	}
-	return 27;
-}
-
-/* -- finds a shortest path to nearest food, blind to it's own body --*/
-unsigned char neural_network::simple_ai() {
+inline const unsigned char AI_simple::get_input() {
 	coordinate head = gamestate->snake->body.front();
 
 	/* find closest food */
@@ -52,15 +47,4 @@ unsigned char neural_network::simple_ai() {
 		target = closest_food.x;
 	}
 	return 'w';
-}
-
-/* -- totally random movement -- */
-unsigned char neural_network::random_ai() {
-	switch(randomint(0, 3)) {
-		case 0: return 'w'; break;
-		case 1: return 's'; break;
-		case 2: return 'a'; break;
-		case 3: return 'd'; break;
-	}
-	return 27;
 }

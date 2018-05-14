@@ -42,11 +42,18 @@ int main(int argc, char *argv[]) {
 			if (strcmp(argv[i], "-u") == 0) USER_PLAY = true;
 			if (strcmp(argv[i], "-d") == 0) DISCO_MODE = true;
 			if (strcmp(argv[i], "-simple") == 0) a = SIMPLE;
+			if (strcmp(argv[i], "-neural") == 0) a = NEURAL;
 		}
 	}
 
 	std::shared_ptr<game> g = std::make_shared<game>(DISCO_MODE);
-	std::shared_ptr<neural_network> n = std::make_shared<neural_network>(g, a);
+	std::shared_ptr<AI> n;
+	switch(a) {
+		case SIMPLE:	n = std::make_shared<AI_simple>(g); break;
+		case NEURAL:	n = std::make_shared<AI_neural>(g); break;
+		default:		n = std::make_shared<AI_random>(g);
+	}
+
 	renderer Renderer(argc, argv, g, n, USER_PLAY);
 	return 0;
 }

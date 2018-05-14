@@ -14,7 +14,7 @@ class game {
 		void draw();
 		void update(float time);
 		void draw_lose();
-		void handle_input();
+		void get_input();
 	private:
 		/* -- events -- */
 		void generate_food();

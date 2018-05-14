@@ -9,7 +9,7 @@
 
 renderer *glut_callback;
 std::shared_ptr<game> game_callback;
-std::shared_ptr<neural_network> neural_network_callback;
+std::shared_ptr<AI> AI_callback;
 
 void reshapeCallback(const int w, const int h) {
 	glut_callback->reshape(w, h);
@@ -26,7 +26,7 @@ void inputCallback(const unsigned char key, const int x, const int y) {
 void inputUpCallback(const unsigned char key, const int x, const int y) {
 	game_callback->inputHandler->keyboardUpFunc(key, x, y);
 }
-void neuralinputCallback(const unsigned char key) {
+void AIinputCallback(const unsigned char key) {
 	game_callback->inputHandler->inputFunc(key);
 }
 
@@ -34,11 +34,11 @@ void neuralinputCallback(const unsigned char key) {
 
 /* -- set callbacks and init glut -- */
 renderer::renderer(int argc, char *argv[],
-				std::shared_ptr<game> g, std::shared_ptr<neural_network> n,
+				std::shared_ptr<game> g, std::shared_ptr<AI> n,
 				bool USR_PLAY) {
 	glut_callback = this;
 	game_callback = g;
-	neural_network_callback = n;
+	AI_callback = n;
 	USER_PLAY = USR_PLAY;
 	init_glut(argc, argv);
 }
@@ -96,8 +96,8 @@ void renderer::display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* -- handle (user) input -- */
-	if (!USER_PLAY) neuralinputCallback(neural_network_callback->get_input());
-	game_callback->handle_input();
+	if (!USER_PLAY) AIinputCallback(AI_callback->get_input());
+	game_callback->get_input();
 	
 	/* -- draw game objects -- */
 	game_callback->draw();

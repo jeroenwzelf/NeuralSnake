@@ -170,7 +170,7 @@ void game::draw_gridpixel(coordinate C, color col) {
 	glEnd();
 }
 
-void game::handle_input() {
+void game::get_input() {
 	if (running) {
 		/* -- keypress continuous actions (in keys_down) -- */
 		for (unsigned int i = 0; i < inputHandler->keys_down.size(); ++i) {
