@@ -8,6 +8,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#define N_EPOCHS 1000
+
 class Neuron;
 typedef std::vector<Neuron> Layer;
 
@@ -15,7 +17,6 @@ struct Connection {
 	Connection() { weight = randomfloat(0, 1); weight_difference = 0; }
 	float weight;
 	float weight_difference;
-
 	std::ostringstream print() const {
 		std::ostringstream ss;
 		ss << std::setprecision(std::numeric_limits<float>::digits10+1);
@@ -67,9 +68,9 @@ class Neural_Network {
 
 		void get_results(std::vector<float> &results) const;
 		
-		Neuron* get_neuron(unsigned layer, unsigned i) { return &network[layer][i]; }
-	private:
+		//Neuron* get_neuron(unsigned layer, unsigned i) { return &network[layer][i]; }
 		std::vector<Layer> network;
+	private:
 		float overall_error;
 	public:
 		std::ostringstream print() const {
@@ -84,10 +85,10 @@ class Neural_Network {
 
 class AI_neural : public AI {
 	public:
-		AI_neural(std::shared_ptr<game> g) : AI(g) {
+		AI_neural(std::shared_ptr<game> g) : AI(g), previous_input('w'), epochs(N_EPOCHS) {
 			std::ifstream file(neural_network_file);
-			if (file.fail()) NN = Neural_Network( {6*g->WORLD_SIZE*g->WORLD_SIZE, g->WORLD_SIZE*6, g->WORLD_SIZE*4, 4} );
-			else NN = load_neural_network_file(file);
+			if (file.fail()) NN = Neural_Network( {3*g->WORLD_SIZE*g->WORLD_SIZE, 64, 32, 4} );
+			else load_neural_network_file(file);
 			file.close();
 		}
 		const unsigned char get_input() override;
@@ -95,12 +96,13 @@ class AI_neural : public AI {
 		Neural_Network NN;
 		unsigned highest_output();
 		unsigned char previous_input;
+		int epochs;
 		/* -- functions regarding Q-learning -- */
 		void observe_and_learn_gamestate();
 		int reward();
 
 		/* -- neural network loading and saving -- */
 		const std::string neural_network_file = "NN_data";
-		Neural_Network load_neural_network_file(std::ifstream &file) const;
+		void load_neural_network_file(std::ifstream &file);
 		void save_in_neural_network_file() const;
 };

@@ -75,8 +75,8 @@ void Neural_Network::feed_forward(const std::vector<float> &inputs) {
 	}
 
 	/* -- propagate it through every hidden layer -- */
-	Layer &previous_layer = network.front();
-	for (auto &current_layer : network) {
+	Layer previous_layer = network.front();
+	for (auto current_layer : network) {
 		for (auto &neuron : current_layer) {
 			neuron.feed_forward(previous_layer);
 		}
@@ -152,7 +152,7 @@ void Neural_Network::get_results(std::vector<float> &results) const {
 	for (auto &neuron : network.back()) results.push_back(neuron.output);
 }
 
-Neural_Network AI_neural::load_neural_network_file(std::ifstream &file) const {
+void AI_neural::load_neural_network_file(std::ifstream &file) {
 	static const std::string delimiter = "#";
 	std::vector<unsigned> settings;
 	std::string line;
@@ -167,7 +167,8 @@ Neural_Network AI_neural::load_neural_network_file(std::ifstream &file) const {
 	}
 	settings.push_back( atoll((line.substr(0, pos).c_str())) );
 
-	Neural_Network NN_file(settings);
+	//Neural_Network NN_file(settings);
+	NN = Neural_Network(settings);
 	/* -- read all available Neuron info and copy it into the Neural_Network -- */
 	/* (this reads the rest of the file according to the header) */
 	unsigned layer = 0;
@@ -186,7 +187,8 @@ Neural_Network AI_neural::load_neural_network_file(std::ifstream &file) const {
 			neuron_data.push_back( std::stof((line.substr(0, pos).c_str())));
 
 			/* -- put parsed data in corresponding neuron -- */
-			auto neuron = NN_file.get_neuron(layer, n);
+			//auto neuron = NN_file.get_neuron(layer, n);
+			Neuron* neuron = &NN.network[layer][n];
 			neuron->output = neuron_data[0];
 			neuron->gradient = neuron_data[1];
 			neuron->weight_index = neuron_data[2];
@@ -201,8 +203,6 @@ Neural_Network AI_neural::load_neural_network_file(std::ifstream &file) const {
 		}
 		++layer;
 	}
-
-	return NN_file;
 }
 
 void AI_neural::save_in_neural_network_file() const {
@@ -216,7 +216,7 @@ unsigned AI_neural::highest_output() {
 	NN.get_results(results);
 
 	unsigned highest_result_index = 0;
-	for (unsigned i=1; i < results.size(); ++i) {
+	for (unsigned i=1; i < results.size()-1; ++i) {
 		if (results[i] > results[highest_result_index])
 			highest_result_index = i;
 	}
@@ -234,26 +234,28 @@ void AI_neural::observe_and_learn_gamestate() {
 	typedef std::vector<cell> GRID_rows;
 	std::vector<GRID_rows> GRID;
 
+	GRID_rows emptyrow;
+	for (unsigned i=0; i < gamestate->WORLD_SIZE; ++i) GRID.push_back(emptyrow);
 	for (auto &row : GRID) {
 		for (unsigned i = 0; i < gamestate->WORLD_SIZE; ++i) {
 			cell c = {1, 0, 0};
 			row.push_back(c);
 		}
 	}
-	for (auto &part : gamestate->snake->body) {
+	for (auto const &part : gamestate->snake->body) {
 		GRID[part.y][part.x][0] = 0;
 		GRID[part.y][part.x][1] = 1;
 	}
-	for (auto &food : gamestate->all_food) {
+	for (auto const &food : gamestate->all_food) {
 		GRID[food.loc.y][food.loc.x][0] = 0;
 		GRID[food.loc.y][food.loc.x][2] = 1;
 	}
 
 	/* -- convert 3D vector to 1D vector -- */
 	std::vector<float> inputs;
-	for (auto &row : GRID) for (auto &cell : row) for (auto &layer : cell)
+	for (auto const &row : GRID) for (auto const &cell : row) for (auto const &layer : cell)
 		inputs.push_back(layer);
-	
+
 	NN.feed_forward(inputs);
 
 	float target = reward() + (gamma * highest_output());
@@ -263,9 +265,9 @@ void AI_neural::observe_and_learn_gamestate() {
 		case 's': input_index = 1; break;
 		case 'a': input_index = 2; break;
 		case 'd': input_index = 3; break;
+
 	}
 	NN.back_propagation(target, input_index);
-
 }
 
 int AI_neural::reward() {
@@ -274,8 +276,10 @@ int AI_neural::reward() {
 
 const unsigned char AI_neural::get_input() {
 	if (!gamestate->running) {
+		--epochs;
 		save_in_neural_network_file();
-		return 27;
+		if (epochs > 0) return 'r';
+		return 'q';
 	}
 	/* -- train the neural network -- */
 	observe_and_learn_gamestate();
@@ -290,26 +294,28 @@ const unsigned char AI_neural::get_input() {
 	typedef std::vector<cell> GRID_rows;
 	std::vector<GRID_rows> GRID;
 
+	GRID_rows emptyrow;
+	for (unsigned i=0; i < gamestate->WORLD_SIZE; ++i) GRID.push_back(emptyrow);
 	for (auto &row : GRID) {
 		for (unsigned i = 0; i < gamestate->WORLD_SIZE; ++i) {
 			cell c = {1, 0, 0};
 			row.push_back(c);
 		}
 	}
-	for (auto &part : gamestate->snake->body) {
+	for (auto const &part : gamestate->snake->body) {
 		GRID[part.y][part.x][0] = 0;
 		GRID[part.y][part.x][1] = 1;
 	}
-	for (auto &food : gamestate->all_food) {
+	for (auto const &food : gamestate->all_food) {
 		GRID[food.loc.y][food.loc.x][0] = 0;
 		GRID[food.loc.y][food.loc.x][2] = 1;
 	}
 
 	/* -- convert 3D vector to 1D vector -- */
 	std::vector<float> inputs;
-	for (auto &row : GRID) for (auto &cell : row) for (auto &layer : cell)
+	for (auto const &row : GRID) for (auto const &cell : row) for (auto const &layer : cell)
 		inputs.push_back(layer);
-	
+
 	NN.feed_forward(inputs);
 
 	unsigned char INPUT = 27;
@@ -331,7 +337,7 @@ const unsigned char AI_neural::get_input() {
 			default: INPUT = 27;
 		}
 	}
-	epsilon -= 0.001;
+	if (epsilon > 0.02) epsilon -= 0.01;
 	if (INPUT == 27) save_in_neural_network_file();
 	previous_input = INPUT;
 	return INPUT;

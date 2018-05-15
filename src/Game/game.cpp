@@ -114,10 +114,9 @@ void game::draw() {
 	glEnd();
 
 	/* -- draw food -- */
-	for (auto f : all_food) draw_gridpixel(f.loc, f.col);
+	for (auto const &f : all_food) draw_gridpixel(f.loc, f.col);
 	/* -- draw snake -- */
-	for (auto part : snake->body)
-		draw_gridpixel(part, snakecolor);
+	for (auto const &part : snake->body) draw_gridpixel(part, snakecolor);
 	/* -- draw counters -- */
     std::string secondcounter = "SECONDS: " + std::to_string(seconds);
 	glColor3f(backgroundcolor.r, backgroundcolor.g, backgroundcolor.b);
@@ -160,7 +159,7 @@ void game::draw_gridpixel(coordinate C) {
 }
 /* -- draws colored pixel with coordinate C on the grid -- */
 void game::draw_gridpixel(coordinate C, color col) {
-	float x = C.x-(WORLD_SIZE / 2); float y = C.y-(WORLD_SIZE / 2);
+	float x = C.x-(static_cast<float>(WORLD_SIZE) / 2); float y = C.y-(static_cast<float>(WORLD_SIZE) / 2);
 	glColor3f(col.r, col.g, col.b);
 	glBegin(GL_QUADS);
 		glVertex2f(  x ,	 y	);

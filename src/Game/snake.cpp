@@ -11,6 +11,7 @@ Snake::Snake(int W) : WORLD_MAX(W), snake_direction(UP) {
 	} while (snake_color.r < 0.4 && snake_color.g < 0.4 && snake_color.b < 0.4);
 }
 
+#include <iostream>
 bool Snake::move() {
 	/* -- determine snake direction -- */
 	coordinate head = body.front();
